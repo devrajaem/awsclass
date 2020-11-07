@@ -1,0 +1,32 @@
+---
+- hosts: nodes
+  become: yes
+  tasks:
+    - name: Install Apache Web Server
+      apt: pkg=apache2 state=latest
+
+    - name: Add PHP 7 PPA repository
+      become: true
+      apt_repository:
+        repo: 'ppa:ondrej/php'
+
+
+    - name: Install PHP
+      apt: pkg=php7.2 state=latest
+
+    - name: Replace Default index file in apache2
+      become: true
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: Git checkout
+      become: true
+      git:
+       repo: 'https://github.com/devrajaem/test.git'
+       dest: /var/www/html/
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted

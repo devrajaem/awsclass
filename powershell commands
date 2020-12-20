@@ -27,3 +27,20 @@ Remove-Item -Path WSMan:\localhost\Listener\* -Recurse -Force
 
 winrm get winrm/config/Service
 winrm get winrm/config/Winrs  
+
+
+#add following contente to /etc/ansible/hosts in ansible controller
+[winnode1]
+
+172.31.37.162
+
+[winnode1:vars]
+
+ansible_user=Administrator
+ansible_password=sK%w5i=wgG;hQY8Lji?BuR5Dv2jqPTEE
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+
+#Disable windows firewall before ping test 
+#Run this command in ansible controller 
+ansible -m win_ping winnode1

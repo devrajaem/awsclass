@@ -1,0 +1,29 @@
+$url = "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
+$file = "$env:temp\ConfigureRemotingForAnsible.ps1"
+
+(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+
+powershell.exe -ExecutionPolicy ByPass -File $file
+
+winrm enumerate winrm/config/Listener
+
+$thumbprint = "A796786C288FA08D23D064F6ADC90A018B74DE81"
+Get-ChildItem -Path cert:\LocalMachine\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint } | Select-Object *  
+
+$selector_set = @{
+    Address = "*"
+    Transport = "HTTPS"
+}
+
+$value_set = @{
+    CertificateThumbprint = "A796786C288FA08D23D064F6ADC90A018B74DE81"
+}
+
+New-WSManInstance -ResourceURI "winrm/config/Listener" -SelectorSet $selector_set -ValueSet $value_set
+
+### if required remove winrm listner#####
+Remove-Item -Path WSMan:\localhost\Listener\* -Recurse -Force
+###
+
+winrm get winrm/config/Service
+winrm get winrm/config/Winrs  

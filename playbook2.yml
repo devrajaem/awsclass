@@ -1,0 +1,14 @@
+---
+- hosts: winserver
+  tasks:
+     - name: install IIS web server
+	   win_feature:
+	        name: web-server
+			Include_management_tools: yes
+			Include_sub_features: yes
+			state: present
+			
+	- name: Copy file
+	    win_copy:
+		   src: /tmp/index.html
+		   dest: C:\inetpub\wwwroot\index.html
